@@ -37,3 +37,12 @@ exports.deleteBlog = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getBlog = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    res.json(blog);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
