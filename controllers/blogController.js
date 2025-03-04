@@ -11,8 +11,10 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
-    const newBlog = new Blog({ title, content, author: req.user.id });
+    const { title, content, author } = req.body;
+    const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
+    console.log
+    const newBlog = new Blog({ title, content, author, image: imagePath });
     await newBlog.save();
     res.status(201).json(newBlog);
   } catch (error) {
