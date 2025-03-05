@@ -19,7 +19,7 @@ const upload = multer({ storage });
 
 router.get("/", getAllBlogs);
 router.post("/", authMiddleware, upload.single("image"), createBlog);
-router.put("/:id", authMiddleware, updateBlog);
+router.put("/:id", authMiddleware, upload.single("image"), updateBlog);
 router.delete("/:id", authMiddleware, deleteBlog);
 router.get("/:id", authMiddleware, getBlog);
 
