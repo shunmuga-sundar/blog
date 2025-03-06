@@ -4,7 +4,7 @@ const fs = require("fs");
 
 exports.getAllBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().populate("author", "username");
+    const blogs = await Blog.find().sort([['createdAt', -1]]).populate("author", "username");
     res.json(blogs);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -13,10 +13,10 @@ exports.getAllBlogs = async (req, res) => {
 
 exports.createBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
     const author = req.user.id;
     const imagePath = req.file ? `/uploads/${req.file.filename}` : null;
-    const newBlog = new Blog({ title, content, author, image: imagePath });
+    const newBlog = new Blog({ title, content, author, tags: tags ? tags.split(",").map(tag => tag.trim()) : [], image: imagePath });
     await newBlog.save();
     res.status(201).json(newBlog);
   } catch (error) {
@@ -26,9 +26,13 @@ exports.createBlog = async (req, res) => {
 
 exports.updateBlog = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title, content, tags } = req.body;
     let updateData = { title, content };
 
+    // Convert tags to an array if provided
+    if (tags) {
+      updateData.tags = tags.split(",").map(tag => tag.trim());
+    }
     // Find the existing blog
     const existingBlog = await Blog.findById(req.params.id);
     if (!existingBlog) {
@@ -72,7 +76,9 @@ exports.deleteBlog = async (req, res) => {
 
 exports.getBlog = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findOne({
+      url: req.params.id
+    });
     res.json(blog);
   } catch (error) {
     res.status(500).json({ error: error.message });
