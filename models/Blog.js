@@ -11,11 +11,20 @@ const BlogSchema = new mongoose.Schema({
 
 
 BlogSchema.pre("save", async function (next) {
+  console.log("isChanged",this.isModified("title"))
   if (!this.isModified("title")) return next();
 
   console.log("tt", this.title)
 
   this.url = this.title.replaceAll(' ', '-').toLowerCase();
+  next();
+});
+
+BlogSchema.pre("findOneAndUpdate", async function (next) {
+  const data = this.getUpdate();
+  if (data.title) {
+    data.url = data.title.replaceAll(' ', '-').toLowerCase();
+  }
   next();
 });
 

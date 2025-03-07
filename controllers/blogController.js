@@ -45,7 +45,7 @@ exports.updateBlog = async (req, res) => {
 
       // Delete the old image if it exists
       if (existingBlog.image) {
-        const oldImagePath = path.join(__dirname, "..", existingBlog.image);
+        const oldImagePath = path.join(__dirname, "../uploads/", existingBlog.image);
         fs.unlink(oldImagePath, (err) => {
           if (err) console.error("Error deleting old image:", err);
         });
